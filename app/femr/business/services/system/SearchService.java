@@ -83,6 +83,10 @@ public class SearchService implements ISearchService {
         this.cityRepository = cityRepository;
     }
 
+    protected Integer findWeeksPregnant(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findWeeksPregnant(patientEncounterVitalRepository, encounterId);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -114,7 +118,7 @@ public class SearchService implements ISearchService {
                 patientHeightFeet = QueryHelper.findPatientHeightFeet(patientEncounterVitalRepository, recentEncounter.getId());
                 patientHeightInches = QueryHelper.findPatientHeightInches(patientEncounterVitalRepository, recentEncounter.getId());
                 patientWeight = QueryHelper.findPatientWeight(patientEncounterVitalRepository, recentEncounter.getId());
-                weeksPregnant = QueryHelper.findWeeksPregnant(patientEncounterVitalRepository, recentEncounter.getId());
+                weeksPregnant = findWeeksPregnant(patientEncounterVitalRepository, recentEncounter.getId());
                 smoker = QueryHelper.findPatientSmoker(patientEncounterVitalRepository, recentEncounter.getId());
                 diabetic = QueryHelper.findPatientDiabetic(patientEncounterVitalRepository, recentEncounter.getId());
                 alcohol = QueryHelper.findPatientAlcohol(patientEncounterVitalRepository, recentEncounter.getId());
@@ -200,7 +204,7 @@ public class SearchService implements ISearchService {
             Integer patientHeightFeet = QueryHelper.findPatientHeightFeet(patientEncounterVitalRepository, patientEncounter.getId());
             Integer patientHeightInches = QueryHelper.findPatientHeightInches(patientEncounterVitalRepository, patientEncounter.getId());
             Float patientWeight = QueryHelper.findPatientWeight(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer weeksPregnant = QueryHelper.findWeeksPregnant(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer weeksPregnant = findWeeksPregnant(patientEncounterVitalRepository, patientEncounter.getId());
             Integer smoker = QueryHelper.findPatientSmoker(patientEncounterVitalRepository, patientEncounter.getId());
             Integer diabetic = QueryHelper.findPatientDiabetic(patientEncounterVitalRepository, patientEncounter.getId());
             Integer alcohol = QueryHelper.findPatientAlcohol(patientEncounterVitalRepository, patientEncounter.getId());
