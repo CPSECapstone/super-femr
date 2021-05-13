@@ -83,8 +83,40 @@ public class SearchService implements ISearchService {
         this.cityRepository = cityRepository;
     }
 
+    protected Float findPatientWeight(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findPatientWeight(patientEncounterVitalRepository, encounterId);
+    }
+
     protected Integer findWeeksPregnant(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
         return QueryHelper.findWeeksPregnant(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientHeightFeet(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findPatientHeightFeet(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientHeightInches(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId) {
+        return QueryHelper.findPatientHeightInches(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientSmoker(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId) {
+        return QueryHelper.findPatientSmoker(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientDiabetic(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findPatientSmoker(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientAlcohol(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findPatientAlcohol(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientCholesterol(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findPatientCholesterol(patientEncounterVitalRepository, encounterId);
+    }
+
+    protected Integer findPatientHypertension(IRepository<IPatientEncounterVital> patientEncounterVitalRepository, int encounterId){
+        return QueryHelper.findPatientHypertension(patientEncounterVitalRepository, encounterId);
     }
 
     /**
@@ -115,15 +147,15 @@ public class SearchService implements ISearchService {
             if (patientEncounters.size() > 0){
 
                 IPatientEncounter recentEncounter = patientEncounters.get(0);
-                patientHeightFeet = QueryHelper.findPatientHeightFeet(patientEncounterVitalRepository, recentEncounter.getId());
-                patientHeightInches = QueryHelper.findPatientHeightInches(patientEncounterVitalRepository, recentEncounter.getId());
-                patientWeight = QueryHelper.findPatientWeight(patientEncounterVitalRepository, recentEncounter.getId());
+                patientHeightFeet = findPatientHeightFeet(patientEncounterVitalRepository, recentEncounter.getId());
+                patientHeightInches = findPatientHeightInches(patientEncounterVitalRepository, recentEncounter.getId());
+                patientWeight = findPatientWeight(patientEncounterVitalRepository, recentEncounter.getId());
                 weeksPregnant = findWeeksPregnant(patientEncounterVitalRepository, recentEncounter.getId());
-                smoker = QueryHelper.findPatientSmoker(patientEncounterVitalRepository, recentEncounter.getId());
-                diabetic = QueryHelper.findPatientDiabetic(patientEncounterVitalRepository, recentEncounter.getId());
-                alcohol = QueryHelper.findPatientAlcohol(patientEncounterVitalRepository, recentEncounter.getId());
-                cholesterol = QueryHelper.findPatientCholesterol(patientEncounterVitalRepository, recentEncounter.getId());
-                hypertension = QueryHelper.findPatientHypertension(patientEncounterVitalRepository, recentEncounter.getId());
+                smoker = findPatientSmoker(patientEncounterVitalRepository, recentEncounter.getId());
+                diabetic = findPatientDiabetic(patientEncounterVitalRepository, recentEncounter.getId());
+                alcohol = findPatientAlcohol(patientEncounterVitalRepository, recentEncounter.getId());
+                cholesterol = findPatientCholesterol(patientEncounterVitalRepository, recentEncounter.getId());
+                hypertension = findPatientHypertension(patientEncounterVitalRepository, recentEncounter.getId());
 
                 if (recentEncounter.getPatientAgeClassification() != null){
                     ageClassification = recentEncounter.getPatientAgeClassification().getName();
@@ -201,15 +233,15 @@ public class SearchService implements ISearchService {
 
             IPatientEncounter patientEncounter = patientEncounterRepository.retrievePatientEncounterById(encounterId);
             IPatient patient = patientEncounter.getPatient();
-            Integer patientHeightFeet = QueryHelper.findPatientHeightFeet(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer patientHeightInches = QueryHelper.findPatientHeightInches(patientEncounterVitalRepository, patientEncounter.getId());
-            Float patientWeight = QueryHelper.findPatientWeight(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer patientHeightFeet = findPatientHeightFeet(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer patientHeightInches = findPatientHeightInches(patientEncounterVitalRepository, patientEncounter.getId());
+            Float patientWeight = findPatientWeight(patientEncounterVitalRepository, patientEncounter.getId());
             Integer weeksPregnant = findWeeksPregnant(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer smoker = QueryHelper.findPatientSmoker(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer diabetic = QueryHelper.findPatientDiabetic(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer alcohol = QueryHelper.findPatientAlcohol(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer cholesterol = QueryHelper.findPatientCholesterol(patientEncounterVitalRepository, patientEncounter.getId());
-            Integer hypertension = QueryHelper.findPatientHypertension(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer smoker = findPatientSmoker(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer diabetic = findPatientDiabetic(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer alcohol = findPatientAlcohol(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer cholesterol = findPatientCholesterol(patientEncounterVitalRepository, patientEncounter.getId());
+            Integer hypertension = findPatientHypertension(patientEncounterVitalRepository, patientEncounter.getId());
 
             String ageClassification = null;
             if (patientEncounter.getPatientAgeClassification() != null){
