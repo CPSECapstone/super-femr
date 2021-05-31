@@ -7,7 +7,7 @@ import javax.persistence.*;
 @Sql
 public class RankedPatientMatch implements IRankedPatientMatch {
 
-    @OneToOne
+    @OneToMany
     Patient patient;
     Integer rank;
 

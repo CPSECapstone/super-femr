@@ -243,6 +243,73 @@ public class PatientRepository implements IPatientRepository {
      * {@inheritDoc}
      */
     @Override
+    public List<? extends ICompoundKeyRankedPatientMatch> retrieveCompoundPatientMatchesFromTriageFields(String firstName, String lastName, String phone, String addr, String gender, Long age, String city) {
+
+        List<? extends ICompoundKeyRankedPatientMatch> response = null;
+        try {
+
+            Query<? extends ICompoundKeyRankedPatientMatch> query = QueryProvider.getCompoundKeyRankedPatientMatchQuery();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String ageString = "";
+            if(age != null) {
+                ageString = dateFormat.format(new Date(age));
+            }
+
+
+            String sql
+                    = "select id, kit_id, user_id, first_name, last_name, phone_number, age, sex, address, city, isDeleted, deleted_by_user_id, reason_deleted, (" +
+                    (phone != null && !phone.equals("") ? "case when phone_number = " + phone + " then " + config.getInt("phone") + " else 0 end + " : "") +
+                    "case when last_name = \"" + lastName + "\" then " + config.getInt("lastName") + " else 0 end + " +
+                    "case when first_name = \"" + firstName + "\" then " + config.getInt("firstName") + " else 0 end + " +
+                    "case when dm_last_name = dm(\"" + lastName + "\") then " + config.getInt("dmLastName") + " else 0 end + " +
+                    "case when dm_first_name = dm(\"" + firstName + "\") then " + config.getInt("dmFirstName") + " else 0 end + " +
+                    (addr != null && !addr.equals("") ? "case when address = \"" + addr + "\" then " + config.getInt("address") + " else 0 end + " : "") +
+                    (age != null ? "case when age != null and abs(datediff(age, \"" + ageString + "\") / 365) <= 5.0 then " + config.getInt("ageWithin5Y") + " else 0 end + " : "") +
+                    (age != null ? "case when age != null and abs(datediff(age, \"" + ageString + "\") / 365) <= 2.0 then " + config.getInt("ageWithin2Y") + " else 0 end + " : "") +
+                    (age != null ? "case when age != null and abs(datediff(age, \"" + ageString + "\") / 365) > 5.0 then " + config.getInt("ageGreaterThan5Y") + " else 0 end + " : "") +
+                    (age != null ? "case when age != null and abs(datediff(age, \"" + ageString + "\") / 365) > 10.0 then " + config.getInt("ageGreaterThan10Y") + " else 0 end + " : "") +
+                    (age != null ? "case when age != null and abs(datediff(age, \"" + ageString + "\") / 365) > 15.0 then " + config.getInt("ageGreaterThan15Y") + " else 0 end + " : "") +
+                    "case when sex = \"" + gender + "\" then " + config.getInt("sex") + " else 0 end + " +
+                    "case when city like \"" + city + "\" then " + config.getInt("city") + " else 0 end) " +
+                    "as priority " +
+                    "from patients having priority >= 30 and isDeleted is null order by priority desc limit 15";
+
+            RawSql rawSql = RawSqlBuilder
+                    .parse(sql)
+                    .columnMapping("id", "patientId")
+                    .columnMapping("kit_id", "kitId")
+                    .columnMapping("user_id", "userId")
+                    .columnMapping("first_name", "firstName")
+                    .columnMapping("last_name", "lastName")
+                    .columnMapping("phone_number", "phoneNumber")
+                    .columnMapping("age", "age")
+                    .columnMapping("sex", "sex")
+                    .columnMapping("address", "address")
+                    .columnMapping("city", "city")
+                    .columnMapping("isDeleted", "isDeleted")
+                    .columnMapping("deleted_by_user_id", "deletedByUserId")
+                    .columnMapping("reason_deleted", "reasonDeleted")
+                    .columnMapping("priority", "rank")
+                    .create();
+
+            query.setRawSql(rawSql);
+
+            response = query.findList();
+
+        } catch (Exception ex) {
+
+            Logger.error("PatientRepository-retrieveCompoundPatientMatchesFromTriageFields", ex.getMessage());
+            throw ex;
+        }
+
+        return response;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<? extends IRankedPatientMatch> retrievePatientMatchesFromTriageFields(String firstName, String lastName, String phone, String addr, String gender, Long age, String city) {
 
         List<? extends IRankedPatientMatch> response = null;
@@ -278,6 +345,9 @@ public class PatientRepository implements IPatientRepository {
             RawSql rawSql = RawSqlBuilder
                     .parse(sql)
                     .columnMapping("id", "patient.id")
+                    // Would like to do this mapping into patient and then patient key but doesn't work
+//                    .columnMapping("id", "patient.patientKey.patientId")
+//                    .columnMapping("kit_id", "patient.patientKey.kitId")
                     .columnMapping("user_id", "patient.userId")
                     .columnMapping("first_name", "patient.firstName")
                     .columnMapping("last_name", "patient.lastName")

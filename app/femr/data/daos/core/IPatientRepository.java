@@ -78,6 +78,23 @@ public interface IPatientRepository {
     List<? extends IRankedPatientMatch> retrievePatientMatchesFromTriageFields(String firstName, String lastName, String phone, String addr, String gender, Long age, String city);
 
     /**
+     * Retrieve a list of patients that are given a ranking based on how similar the patient is to
+     * what was fields inputted in triage
+     * These patients also use the compound patient key which is really just having an attribute for patient id
+     * and patient key
+     *
+     * CompoundKeyRankedPatientMatch is a class that should be replaced by a better implementation in the future, but it
+     * copies all the code in RankedPatientMatch class as well as the Patient class into one new class to get retrieving
+     * ranked patients that use the compound primary key to work. Basically the columnMapping done in PatientRepository
+     * wasn't mapping to the compound key (PatientKey.java) in patient, so this is a transition class that has all the
+     * attributes as basic data types so that the mapping could work.
+     *
+     * @return a list of CompoundKeyRankedPatientMatch objects
+     *
+     */
+    List<? extends ICompoundKeyRankedPatientMatch> retrieveCompoundPatientMatchesFromTriageFields(String firstName, String lastName, String phone, String addr, String gender, Long age, String city);
+
+    /**
      *  Retrieve list of patients with the given first AND last name. Will also
      *  try to match firstName to all available first names & last names
      *

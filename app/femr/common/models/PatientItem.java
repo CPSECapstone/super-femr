@@ -22,6 +22,7 @@ import java.util.Date;
 
 public class PatientItem {
     private int Id;
+    private int kitId;
     private String firstName;
     private String lastName;
     private String phoneNumber;
@@ -54,9 +55,18 @@ public class PatientItem {
     private Integer cholesterol;
     private Integer hypertension;
 
+    /**
+     * PatientItem represents a patient in the application while Patient represents
+     * a patient in the database.
+     *
+     * Id is an int that is part of the identifier for a patient
+     * KitId is an int that is the other half of the identifier for a patient
+     * Id and KitId together make up the compound primary key for a patient
+     */
     public PatientItem(){
         //default empty values
         this.Id = 0;
+        this.kitId = 0;
         this.pathToPhoto = "";
     }
 
@@ -66,6 +76,14 @@ public class PatientItem {
 
     public void setId(int id) {
         Id = id;
+    }
+
+    public int getKitId() {
+        return kitId;
+    }
+
+    public void setKitId(int kitId) {
+        this.kitId = kitId;
     }
 
     public String getFirstName() {

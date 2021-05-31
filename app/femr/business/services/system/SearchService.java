@@ -586,27 +586,27 @@ public class SearchService implements ISearchService {
         ServiceResponse<List<RankedPatientItem>> response = new ServiceResponse<>();
 
         try {
-            List<? extends IRankedPatientMatch> rankedPatients = patientRepository.retrievePatientMatchesFromTriageFields(first, last, phone, addr, gender, age, city);
+            List<? extends ICompoundKeyRankedPatientMatch> rankedPatients = patientRepository.retrieveCompoundPatientMatchesFromTriageFields(first, last, phone, addr, gender, age, city);
             List<RankedPatientItem> rankedPatientItems = new ArrayList<>();
 
-            for (IRankedPatientMatch r : rankedPatients) {
+            for (ICompoundKeyRankedPatientMatch r : rankedPatients) {
                 String pathToPhoto = null;
                 Integer photoId = null;
-                if (r.getPatient().getPhoto() != null) {
-                    pathToPhoto = r.getPatient().getPhoto().getFilePath();
-                    photoId = r.getPatient().getPhoto().getId();
+                if (r.getPhoto() != null) {
+                    pathToPhoto = r.getPhoto().getFilePath();
+                    photoId = r.getPhoto().getId();
                 }
 
                 PatientItem patientItem = itemModelMapper.createPatientItem(
-                        r.getPatient().getId(),
-                        r.getPatient().getFirstName(),
-                        r.getPatient().getLastName(),
-                        r.getPatient().getPhoneNumber(),
-                        r.getPatient().getCity(),
-                        r.getPatient().getAddress(),
-                        r.getPatient().getUserId(),
-                        r.getPatient().getAge(),
-                        r.getPatient().getSex(),
+                        r.getId(),
+                        r.getFirstName(),
+                        r.getLastName(),
+                        r.getPhoneNumber(),
+                        r.getCity(),
+                        r.getAddress(),
+                        r.getUserId(),
+                        r.getAge(),
+                        r.getSex(),
                         null,
                         null,
                         null,
