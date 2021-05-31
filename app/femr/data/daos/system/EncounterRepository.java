@@ -1,5 +1,6 @@
 package femr.data.daos.system;
 
+import femr.data.models.mysql.keys.PatientKey;
 import io.ebean.Ebean;
 import io.ebean.ExpressionList;
 import io.ebean.Query;
@@ -48,10 +49,12 @@ public class EncounterRepository implements IEncounterRepository {
 
 
         try{
+            // TODO: get kitId from config file instead of using 1
+            PatientKey patientKey = new PatientKey(patientID, 1);
 
             patientEncounter.setDateOfTriageVisit(date);
             //provide a proxy patient for the encounter
-            patientEncounter.setPatient(Ebean.getReference(patientProvider.get().getClass(), patientID));
+            patientEncounter.setPatient(Ebean.getReference(patientProvider.get().getClass(), patientKey));
             patientEncounter.setNurse(Ebean.getReference(userProvider.get().getClass(), userId));
             if (patientAgeClassificationId != null)
                 patientEncounter.setPatientAgeClassification(Ebean.getReference(patientAgeClassificationProvider.get().getClass(), patientAgeClassificationId));

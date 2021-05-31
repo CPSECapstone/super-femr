@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 import com.typesafe.config.Config;
 
 public class PatientRepository implements IPatientRepository {
@@ -357,18 +359,58 @@ public class PatientRepository implements IPatientRepository {
     @Override
     public IPatient savePatient(IPatient patient) {
 
-        IPatient response = null;
-        try {
+        Boolean savedSafely = false;
+        while (!(savedSafely)) {
+            try {
+                patient.setId(getHighestIdPossible(patient));
+                Ebean.save(patient);
+                savedSafely = true;
+            } catch (io.ebean.DuplicateKeyException ex) {
+                // id must have just been taken, try again
+                Logger.error("duplicate key exception, try to get a valid id again", ex.getMessage());
+            }
+            catch (Exception ex) {
 
-            Ebean.save(patient);
-        } catch (Exception ex) {
-
-            //is it necessary to pass all details about object in log?
-            Logger.error("PatientRepository-savePatient", ex.getMessage());
-            throw ex;
+                //is it necessary to pass all details about object in log?
+                Logger.error("PatientRepository-savePatient", ex.getMessage());
+                throw ex;
+            }
         }
 
         return patient;
+    }
+
+    /**
+     * getHighsetIdPossible
+     *
+     * gets the highest patient id possible for the new patient being saved for that kit
+     * @param patient patient being saved
+     * @return int the highest possible patient id value
+     */
+    private int getHighestIdPossible(IPatient patient) {
+        Optional<Patient> highestIdPatient = getHighestIdPatient(patient);
+
+        if (highestIdPatient.isPresent()) {
+            return (highestIdPatient.get().getId() + 1);
+        } else {
+            return 1;
+        }
+    }
+
+    /**
+     * getHighestIdPatient
+     *
+     * is a helper function that gets a patient from the patients table
+     * which has the highest id for that patient's kit (id)
+     * @param patient which has the kit id for which to search for the highest patient id
+     * @return the optional patient returned is just to get back the id value
+     */
+    private Optional<Patient> getHighestIdPatient(IPatient patient) {
+        return QueryProvider.getPatientQuery()
+                .where().eq("kit_id", patient.getPatientKey().getKitId())
+                .orderBy("id DESC")
+                .setMaxRows(1)
+                .findOneOrEmpty();
     }
 }
 

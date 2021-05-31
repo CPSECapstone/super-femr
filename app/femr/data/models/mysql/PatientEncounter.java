@@ -31,7 +31,10 @@ public class PatientEncounter implements IPatientEncounter {
     @Column(name = "id", unique = true, nullable = false)
     private int id;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "patient_id", nullable = false, referencedColumnName = "id")
+    @JoinColumns({
+            @JoinColumn(name = "patient_id", nullable = false, referencedColumnName = "id"),
+            @JoinColumn(name = "kit_id", nullable = false, referencedColumnName = "kit_id")
+    })
     private Patient patient;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id_triage", nullable = false)
