@@ -18,7 +18,9 @@
 */
 package femr.data.models.core;
 
+import femr.data.models.mysql.Patient;
 import femr.data.models.mysql.PatientEncounter;
+import femr.data.models.mysql.keys.PatientKey;
 import org.joda.time.DateTime;
 
 import java.util.Date;
@@ -27,6 +29,14 @@ import java.util.List;
 public interface IPatient {
 
     int getId();
+
+    PatientKey getPatientKey();
+
+    void setPatientKey(PatientKey patientKey);
+
+    int getKitId();
+
+    void setKitId(int kitId);
 
     int getUserId();
 

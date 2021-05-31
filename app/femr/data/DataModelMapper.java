@@ -18,6 +18,7 @@
 */
 package femr.data;
 
+import femr.data.models.mysql.keys.PatientKey;
 import io.ebean.Ebean;
 import com.google.inject.Inject;
 import femr.business.services.core.IEncounterService;
@@ -333,6 +334,8 @@ public class DataModelMapper implements IDataModelMapper{
         }
 
         IPatient patient = patientProvider.get();
+
+        patient.setPatientKey(new PatientKey(0, 1));
 
         patient.setUserId(userID);
         patient.setFirstName(firstName);
