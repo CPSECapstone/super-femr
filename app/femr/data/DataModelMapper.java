@@ -18,6 +18,7 @@
 */
 package femr.data;
 
+import com.typesafe.config.Config;
 import femr.data.models.mysql.keys.PatientKey;
 import io.ebean.Ebean;
 import com.google.inject.Inject;
@@ -67,6 +68,7 @@ public class DataModelMapper implements IDataModelMapper{
     private final Provider<IVital> vitalProvider;
     private final Provider<IUser> userProvider;
     private final Provider<ISessionService> sessionServiceProvider;
+    private final Config config;
 
     @Inject
     public DataModelMapper(Provider<IChiefComplaint> chiefComplaintProvider,
@@ -95,7 +97,8 @@ public class DataModelMapper implements IDataModelMapper{
                            Provider<ITab> tabProvider,
                            Provider<IUser> userProvider,
                            Provider<IVital> vitalProvider,
-                           Provider<ISessionService> sessionServiceProvider
+                           Provider<ISessionService> sessionServiceProvider,
+                           Config config
                            ) {
 
         this.chiefComplaintProvider = chiefComplaintProvider;
@@ -125,6 +128,7 @@ public class DataModelMapper implements IDataModelMapper{
         this.userProvider = userProvider;
         this.vitalProvider = vitalProvider;
         this.sessionServiceProvider = sessionServiceProvider;
+        this.config = config;
     }
 
     /**
@@ -335,7 +339,7 @@ public class DataModelMapper implements IDataModelMapper{
 
         IPatient patient = patientProvider.get();
 
-        patient.setPatientKey(new PatientKey(0, 1));
+        patient.setPatientKey(new PatientKey(0, config.getInt("kitId")));
 
         patient.setUserId(userID);
         patient.setFirstName(firstName);

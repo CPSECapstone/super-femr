@@ -13,6 +13,8 @@ import femr.util.calculations.dateUtils;
 import org.joda.time.DateTime;
 import play.Logger;
 
+import com.typesafe.config.Config;
+
 import javax.inject.Inject;
 import java.util.List;
 
@@ -23,19 +25,22 @@ public class EncounterRepository implements IEncounterRepository {
     private final Provider<IPatientAgeClassification> patientAgeClassificationProvider;
     private final Provider<IPatientEncounter> patientEncounterProvider;
     private final Provider<IUser> userProvider;
+    private final Config config;
 
     @Inject
     public EncounterRepository(Provider<IMissionTrip> missionTripProvider,
                                Provider<IPatient> patientProvider,
                                Provider<IPatientAgeClassification> patientAgeClassificationProvider,
                                Provider<IPatientEncounter> patientEncounterProvider,
-                               Provider<IUser> userProvider){
+                               Provider<IUser> userProvider,
+                               Config config){
 
         this.missionTripProvider = missionTripProvider;
         this.patientProvider = patientProvider;
         this.patientAgeClassificationProvider = patientAgeClassificationProvider;
         this.patientEncounterProvider = patientEncounterProvider;
         this.userProvider = userProvider;
+        this.config = config;
     }
 
     /**
@@ -50,7 +55,7 @@ public class EncounterRepository implements IEncounterRepository {
 
         try{
             // TODO: get kitId from config file instead of using 1
-            PatientKey patientKey = new PatientKey(patientID, 1);
+            PatientKey patientKey = new PatientKey(patientID, config.getInt("kitId"));
 
             patientEncounter.setDateOfTriageVisit(date);
             //provide a proxy patient for the encounter

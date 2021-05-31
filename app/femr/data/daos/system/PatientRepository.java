@@ -476,6 +476,7 @@ public class PatientRepository implements IPatientRepository {
      * @return the optional patient returned is just to get back the id value
      */
     private Optional<Patient> getHighestIdPatient(IPatient patient) {
+        //Logger.debug(String.valueOf(patient.getPatientKey().getKitId()));
         return QueryProvider.getPatientQuery()
                 .where().eq("kit_id", patient.getPatientKey().getKitId())
                 .orderBy("id DESC")
