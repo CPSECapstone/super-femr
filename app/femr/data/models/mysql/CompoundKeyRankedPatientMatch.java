@@ -1,26 +1,8 @@
-/*
-     fEMR - fast Electronic Medical Records
-     Copyright (C) 2014  Team fEMR
-
-     fEMR is free software: you can redistribute it and/or modify
-     it under the terms of the GNU General Public License as published by
-     the Free Software Foundation, either version 3 of the License, or
-     (at your option) any later version.
-
-     fEMR is distributed in the hope that it will be useful,
-     but WITHOUT ANY WARRANTY; without even the implied warranty of
-     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     GNU General Public License for more details.
-
-     You should have received a copy of the GNU General Public License
-     along with fEMR.  If not, see <http://www.gnu.org/licenses/>. If
-     you have any questions, contact <info@teamfemr.org>.
-*/
 package femr.data.models.mysql;
 
-import femr.data.models.core.IPatient;
+import femr.data.models.core.ICompoundKeyRankedPatientMatch;
 import femr.data.models.core.IPhoto;
-import femr.data.models.mysql.keys.PatientKey;
+import io.ebean.annotation.Sql;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -28,63 +10,58 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "patients")
-public class Patient implements IPatient {
+@Sql
+public class CompoundKeyRankedPatientMatch implements ICompoundKeyRankedPatientMatch {
 
-    @EmbeddedId
-    private PatientKey patientKey;
-    @Column(name = "user_id", unique = false, nullable = false)
+    private int patientId;
+
+    private int kitId;
+
     private int userId;
-    @Column(name = "first_name", nullable = false)
+
     private String firstName;
-    @Column(name = "last_name", nullable = false)
+
     private String lastName;
-    @Column(name = "phone_number", nullable = true)
+
     private String phoneNumber;
-    @Column(name = "age")
+
     private Date age;
-    @Column(name = "sex", nullable = true)
+
     private String sex;
-    @Column(name = "address", nullable = true)
+
     private String address;
-    @Column(name = "city", nullable = false)
+
     private String city;
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name= "photo_id", nullable = true)
+
     private Photo photo;
-    @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY)
+
     private List<PatientEncounter> patientEncounters;
-    @Column(name = "isDeleted", nullable = true)
+
     private DateTime isDeleted;
-    @Column(name = "deleted_by_user_id", unique = false, nullable = true)
+
     private Integer deletedByUserId;
-    @Column(name = "reason_deleted", nullable = true)
+
     private String reasonDeleted;
 
+    Integer rank;
+
+    public CompoundKeyRankedPatientMatch(int rank) {
+        this.rank = rank;
+    }
 
     @Override
     public int getId() {
-        return patientKey.getPatientId();
+        return this.patientId;
     }
 
     @Override
     public int getKitId() {
-        return patientKey.getKitId();
+        return this.kitId;
     }
 
     @Override
     public void setKitId(int kitId) {
-        this.patientKey.setKitId(kitId);
-    }
-
-    @Override
-    public void setPatientKey(PatientKey patientKey) {
-        this.patientKey = patientKey;
-    }
-
-    @Override
-    public PatientKey getPatientKey() {
-        return patientKey;
+        this.kitId = kitId;
     }
 
     @Override
@@ -169,7 +146,7 @@ public class Patient implements IPatient {
 
     @Override
     public void setId(int id) {
-        patientKey.setPatientId(id);
+        this.patientId = id;
     }
 
     @Override
@@ -217,5 +194,15 @@ public class Patient implements IPatient {
 
     @Override
     public void setReasonDeleted(String reason) { this.reasonDeleted = reason; }
+
+    @Override
+    public Integer getRank() {
+        return rank;
+    }
+
+    @Override
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
 
 }
