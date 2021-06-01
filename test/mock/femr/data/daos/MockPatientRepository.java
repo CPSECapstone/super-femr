@@ -1,6 +1,7 @@
 package mock.femr.data.daos;
 
 import femr.data.daos.core.IPatientRepository;
+import femr.data.models.core.ICompoundKeyRankedPatientMatch;
 import femr.data.models.core.IPatient;
 import femr.data.models.core.IPatientAgeClassification;
 import mock.femr.data.models.MockPatient;
@@ -104,6 +105,11 @@ public class MockPatientRepository implements IPatientRepository{
     @Override
     public List<? extends IRankedPatientMatch> retrievePatientMatchesFromTriageFields(String firstName, String lastName, String phone, String addr, String gender, Long age, String city) {
         return mockRankedPatientMatches;
+    }
+
+    @Override
+    public List<? extends ICompoundKeyRankedPatientMatch> retrieveCompoundPatientMatchesFromTriageFields(String firstName, String lastName, String phone, String addr, String gender, Long age, String city) {
+        return new ArrayList<>();
     }
 
     @Override

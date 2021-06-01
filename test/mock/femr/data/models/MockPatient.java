@@ -4,6 +4,7 @@ import femr.data.models.core.IPatient;
 import femr.data.models.core.IPhoto;
 import femr.data.models.mysql.PatientEncounter;
 import femr.data.models.mysql.Photo;
+import femr.data.models.mysql.keys.PatientKey;
 import org.joda.time.DateTime;
 
 import javax.persistence.*;
@@ -15,6 +16,8 @@ import java.util.List;
 public class MockPatient implements IPatient {
 
     private int id = 0;
+    private int kitId = 0;
+    private PatientKey patientKey = new PatientKey(1, 1);
     private int userId = 0;
     private String firstName = "firstName";
     private String lastName = "lastName";
@@ -32,13 +35,32 @@ public class MockPatient implements IPatient {
 
     @Override
     public int getId() {
-        return id;
+        return patientKey.getPatientId();
     }
 
     @Override
     public void setId(int id) {
+        patientKey.setPatientId(id);
+    }
 
-        this.id = id;
+    @Override
+    public int getKitId() {
+        return patientKey.getKitId();
+    }
+
+    @Override
+    public void setKitId(int kitId) {
+        this.patientKey.setKitId(kitId);
+    }
+
+    @Override
+    public void setPatientKey(PatientKey patientKey) {
+        this.patientKey = patientKey;
+    }
+
+    @Override
+    public PatientKey getPatientKey() {
+        return patientKey;
     }
 
     @Override
