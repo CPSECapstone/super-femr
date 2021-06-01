@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Values... adjust as needed or move around
-ROOTDIR=../../../
+ROOTDIR=../../../../
 now=$(date +"%m_%d_%Y")
 MYSQL_HOST='localhost'
 MYSQL_PORT='3306'
