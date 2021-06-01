@@ -34,11 +34,13 @@ import fr.bmartel.speedtest.SpeedTestSocket;
 import fr.bmartel.speedtest.inter.ISpeedTestListener;
 import fr.bmartel.speedtest.model.SpeedTestError;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.io.InputStreamReader;
 import java.security.UnresolvedPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -177,7 +179,22 @@ public class UpdatesService implements IUpdatesService {
     public ServiceResponse<List<? extends IKitStatus>> updateKitStatuses() {
         ServiceResponse<List<? extends IKitStatus>> response = new ServiceResponse<>();
         try {
-            BackEndControllerHelper.executePythonScript("s3scripts/download.py");
+            Process p = Runtime.getRuntime().exec("sh update.sh");
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            line = "";
+            while ((line = errorReader.readLine()) != null) {
+                System.out.println(line);
+            }
+
             String updatedDate = java.time.LocalDate.now().toString().replace("-", ".");
             IKitStatus kitStatusDate = retrieveKitStatuses().getResponseObject().get(2);
             kitStatusDate.setValue(updatedDate);
