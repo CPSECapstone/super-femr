@@ -4,7 +4,7 @@
 # Stop femr app by killing first PID shown
 kill $(ps aux | grep java | grep -v 'grep' | awk 'NR==1{print $2}')
 
-# stop mysql
+## stop mysql
 sudo launchctl unload -F /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist
 
 ## get the latest updated images. This is assuming femr developers
