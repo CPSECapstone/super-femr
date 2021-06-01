@@ -92,7 +92,7 @@ public class UpdatesService implements IUpdatesService {
                     System.out.println("DOWNLOAD [COMPLETED] rate in bit/s   : " + report.getTransferRateBit());
                     INetworkStatus download = retrieveNetworkStatuses().getResponseObject().get(1);
                     download.setValue((report.getTransferRateBit().
-                            divide(new BigDecimal(1000000))).setScale(2, RoundingMode.FLOOR).toString());
+                            divide(new BigDecimal(1000000))).setScale(2, RoundingMode.FLOOR).toString() + " mbps");
                     networkStatusRepository.update(download);
                 }
 
@@ -114,7 +114,7 @@ public class UpdatesService implements IUpdatesService {
                     System.out.println("UPLOAD [COMPLETED] rate in bit/s   : " + report.getTransferRateBit());
                     INetworkStatus upload = retrieveNetworkStatuses().getResponseObject().get(2);
                     upload.setValue((report.getTransferRateBit().
-                            divide(new BigDecimal(1000000))).setScale(2, RoundingMode.FLOOR).toString());
+                            divide(new BigDecimal(1000000))).setScale(2, RoundingMode.FLOOR).toString() + " mbps");
                     networkStatusRepository.update(upload);
                 }
 
