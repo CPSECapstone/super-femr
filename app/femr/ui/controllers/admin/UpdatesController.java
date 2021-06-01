@@ -125,4 +125,15 @@ public class UpdatesController extends Controller {
         return manageGet();
     }
 
+    public Result rollbackPost() {
+        this.messages = new ArrayList<>();
+
+        // TODO run the rollback script here
+        // TODO need to check errors
+
+        messages.add("The rollback was successfully administered.");
+
+        return manageGet();
+    }
+
 }

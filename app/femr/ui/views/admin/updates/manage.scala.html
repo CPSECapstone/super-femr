@@ -63,7 +63,7 @@
                     } else {<td>Kit Update: Already up to date</td>}
                 </tr>
                 <tr>
-                    @helper.form(action = UpdatesController.kitUpdatePost()) {
+                    @helper.form(action = UpdatesController.rollbackPost()) {
                         <td>Data Rollback: Available</td><td>
                         <input type="submit" class="Button" value="Rollback"/></td>
                     }
