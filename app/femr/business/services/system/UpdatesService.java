@@ -124,8 +124,7 @@ public class UpdatesService implements IUpdatesService {
         ServiceResponse<List<? extends IDatabaseStatus>> response = new ServiceResponse<>();
         //TODO: Do some more robust error checking
         String[] cmd = new String[]{"/bin/bash", "femr.sh"};
-        String workingDir = System.getProperty("user.dir");
-        File dir = new File(workingDir, "app/femr/util/backup");
+        File dir = getScriptDirectory();
         try {
             Process pr = Runtime.getRuntime().exec(cmd, null, dir);
         } catch (Exception e) {
@@ -140,6 +139,18 @@ public class UpdatesService implements IUpdatesService {
         databaseStatusRepository.update(databaseStatus);
 
         return response;
+    }
+
+    private File getScriptDirectory(){
+        File dir = null;
+        try {
+            String workingDir = System.getProperty("user.dir");
+            dir = new File(workingDir, "app/femr/util/backup");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return dir;
+
     }
 
 
