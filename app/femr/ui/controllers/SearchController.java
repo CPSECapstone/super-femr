@@ -31,7 +31,7 @@ import java.util.List;
 //way of handling search requests - all requests will be
 //redirected to another controller. Also, typeahead for now
 @Security.Authenticated(FEMRAuthenticated.class)
-@AllowedRoles({Roles.PHYSICIAN, Roles.PHARMACIST, Roles.NURSE})
+@AllowedRoles({Roles.PHYSICIAN, Roles.PHARMACIST, Roles.NURSE, Roles.ADMINISTRATOR})
 public class SearchController extends Controller {
 
     private ISessionService sessionService;
