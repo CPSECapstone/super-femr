@@ -79,6 +79,10 @@ public class SessionsController extends Controller {
                 throw new RuntimeException();
             }
 
+            ThreadHelper threadHelper = new ThreadHelper(internetStatusService);
+            Thread t = new Thread(threadHelper);
+            t.start();
+
             DateTime start = new DateTime(user.getPasswordCreatedDate());
             DateTime stop = new DateTime(DateTime.now());
             int daysBetween = Days.daysBetween(start, stop).getDays();
@@ -90,10 +94,6 @@ public class SessionsController extends Controller {
             if (user.getPasswordReset() == true){
                 return editPasswordGet(user);
             }
-
-            ThreadHelper threadHelper = new ThreadHelper(internetStatusService);
-            Thread t = new Thread(threadHelper);
-            t.start();
         }
 
         return redirect(routes.HomeController.index());

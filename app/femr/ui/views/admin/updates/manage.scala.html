@@ -14,7 +14,7 @@
         <p class="adminMessage">@message</p>
         }
     }
-    @downloadSpeed = @{viewModel.getNetworkStatus.get("Download").substring(0, viewModel.getNetworkStatus.get("Download").indexOf(".")).toInt}
+    @downloadSpeed = @{viewModel.getNetworkStatus.get("Download").substring(0, 2).toInt}
 
 @admin("Updates", currentUser, styles = additionalStyles, assets = assets, message = additionalMessages) {
         <div style="float:right">

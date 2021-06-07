@@ -1,18 +1,33 @@
 #!/bin/sh
-# Stop femr app by killing java all java processes
-#killall -9 java
+# TODO: Resolve docker-compose 'not found' error by installing docker and docker-compose if needed.
 
-# Stop femr app by killing first PID shown
-kill $(ps aux | grep java | grep -v 'grep' | awk 'NR==1{print $2}')
+# If docker is installed this will print "Update docker"
+# else docker needs to be installed and attempt installation.
+if [ -x "$(command -v docker)" ]; then
+    echo "Update docker"
+    # command
+else
+    echo "Install docker"
+    # TODO: insert command(s) to install docker here.
+fi
 
-# stop mysql
-sudo launchctl unload -F /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist
+# If docker-compose is installed this will print "Update docker"
+# else docker needs to be installed and attempt installation.
+if [ -x "$(command -v docker-compose)" ]; then
+    echo "Update docker-compose"
+else
+    echo "Install docker-compose"
+    # TODO: insert command(s) to install docker-compose here.
+fi
 
-# Builds, (re)creates, starts, and attaches to containers
-docker-compose up --force-recreate --build -d
+# The following docker-compose commands are what execute the update.
+# Delete existing container.
+docker-compose down
+# Pull the most recent femr and db images.
+docker-compose pull
+# Build and start the container.
+docker-compose up
 
-# remove unused images without prompting for confirmation
-#docker remove prune -f
-
-# start mysql
-sudo launchctl load -F /Library/LaunchDaemons/com.oracle.oss.mysql.mysqld.plist
+# Check the versions of docker and docker-compose to ensure they've been installed.
+docker -v
+docker-compose -v

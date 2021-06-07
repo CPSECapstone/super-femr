@@ -29,9 +29,18 @@ import femr.data.models.mysql.KitStatus;
 import femr.data.models.mysql.NetworkStatus;
 import femr.data.models.mysql.DatabaseStatus;
 import femr.ui.controllers.BackEndControllerHelper;
+import fr.bmartel.speedtest.SpeedTestReport;
+import fr.bmartel.speedtest.SpeedTestSocket;
+import fr.bmartel.speedtest.inter.ISpeedTestListener;
+import fr.bmartel.speedtest.model.SpeedTestError;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.io.InputStreamReader;
 import java.security.UnresolvedPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,9 +84,52 @@ public class UpdatesService implements IUpdatesService {
         ServiceResponse<List<? extends INetworkStatus>> response = new ServiceResponse<>();
         ArrayList<String> data = new ArrayList<>();
         try {
-            data = BackEndControllerHelper.executeSpeedTestScript("speedtest/sptest.py");
-            //Update Status
-            Float Ping = Float.parseFloat(data.get(2));
+            // DOWNLOAD SPEED TEST SOCKET
+            SpeedTestSocket speedTestSocketDownload = new SpeedTestSocket();
+            speedTestSocketDownload.addSpeedTestListener(new ISpeedTestListener() {
+                @Override
+                public void onCompletion(SpeedTestReport report) {
+                    System.out.println("DOWNLOAD [COMPLETED] rate in bit/s   : " + report.getTransferRateBit());
+                    INetworkStatus download = retrieveNetworkStatuses().getResponseObject().get(1);
+                    download.setValue((report.getTransferRateBit().
+                            divide(new BigDecimal(1000000))).setScale(2, RoundingMode.FLOOR).toString() + " mbps");
+                    networkStatusRepository.update(download);
+                }
+
+                @Override
+                public void onProgress(float percent, SpeedTestReport report) { }
+
+                @Override
+                public void onError(SpeedTestError speedTestError, String errorMessage) {
+                    response.addError("Network SpeedTest error", speedTestError.toString());
+                }
+            });
+            speedTestSocketDownload.startFixedDownload("http://ipv4.ikoula.testdebit.info/100M.iso", 5000);
+
+            // UPLOAD SPEED TEST SOCKET
+            SpeedTestSocket speedTestSocketUpload = new SpeedTestSocket();
+            speedTestSocketUpload.addSpeedTestListener(new ISpeedTestListener() {
+                @Override
+                public void onCompletion(SpeedTestReport report) {
+                    System.out.println("UPLOAD [COMPLETED] rate in bit/s   : " + report.getTransferRateBit());
+                    INetworkStatus upload = retrieveNetworkStatuses().getResponseObject().get(2);
+                    upload.setValue((report.getTransferRateBit().
+                            divide(new BigDecimal(1000000))).setScale(2, RoundingMode.FLOOR).toString() + " mbps");
+                    networkStatusRepository.update(upload);
+                }
+
+                @Override
+                public void onProgress(float percent, SpeedTestReport report) { }
+
+                @Override
+                public void onError(SpeedTestError speedTestError, String errorMessage) {
+                    response.addError("Network SpeedTest error", speedTestError.toString());
+                }
+            });
+            speedTestSocketUpload.startFixedUpload("http://ipv4.ikoula.testdebit.info/", 10000000, 5000);
+
+            // TODO need to find a new ping check method
+            Float Ping = Float.parseFloat("15.5");
             String updatedStatus = "Connection stable";
             if(Ping <= 0){
                 updatedStatus = "Connection unavailable";
@@ -86,20 +138,8 @@ public class UpdatesService implements IUpdatesService {
             status.setValue(updatedStatus);
             networkStatusRepository.update(status);
 
-            //Update Download
-            String updatedDownload = data.get(0);
-            INetworkStatus download = retrieveNetworkStatuses().getResponseObject().get(1);
-            download.setValue(updatedDownload);
-            networkStatusRepository.update(download);
-
-            //Update Upload
-            String updatedUpload = data.get(1);
-            INetworkStatus upload = retrieveNetworkStatuses().getResponseObject().get(2);
-            upload.setValue(updatedUpload);
-            networkStatusRepository.update(upload);
-
             //Update Ping
-            String updatedPing = data.get(2);
+            String updatedPing = "15";
             INetworkStatus ping = retrieveNetworkStatuses().getResponseObject().get(3);
             ping.setValue(updatedPing);
             networkStatusRepository.update(ping);
@@ -139,7 +179,22 @@ public class UpdatesService implements IUpdatesService {
     public ServiceResponse<List<? extends IKitStatus>> updateKitStatuses() {
         ServiceResponse<List<? extends IKitStatus>> response = new ServiceResponse<>();
         try {
-            BackEndControllerHelper.executePythonScript("s3scripts/download.py");
+            Process p = Runtime.getRuntime().exec("sh update.sh");
+            p.waitFor();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            line = "";
+            while ((line = errorReader.readLine()) != null) {
+                System.out.println(line);
+            }
+
             String updatedDate = java.time.LocalDate.now().toString().replace("-", ".");
             IKitStatus kitStatusDate = retrieveKitStatuses().getResponseObject().get(2);
             kitStatusDate.setValue(updatedDate);
