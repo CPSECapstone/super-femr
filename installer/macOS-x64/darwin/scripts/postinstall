@@ -1,0 +1,48 @@
+#!/bin/bash
+
+#Custermize this for your application
+APPLICATION_FILE_PATH=start-femr
+
+#Parameters
+PRODUCT_HOME=/Library/__PRODUCT__/__VERSION__
+
+echo "Post installation process started"
+
+#Change permissions in home directory
+echo "Change permissions in product home"
+cd ${PRODUCT_HOME}
+chmod -R 755 .
+[ -d /usr/local/bin ] || mkdir /usr/local/bin
+
+#Add application shortcut to /usr/local/bin
+rm -f /usr/local/bin/__PRODUCT__-__VERSION__
+
+rm -f /Applications/fEMR
+cp -R ${PRODUCT_HOME}/${APPLICATION_FILE_PATH} /Applications/fEMR
+
+#mv to /var
+rm -rf /var/__PRODUCT__/
+mv -f $PRODUCT_HOME /var/__PRODUCT__/
+
+#set database passwords
+
+echo "Setting database passwords"
+PASSWORD=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+
+sed -i '' -e 's/__PASSWORD__/'${PASSWORD}'/g' /var/femr/femr/conf/*.conf
+sed -i '' -e 's/__PASSWORD__/'${PASSWORD}'/g' /var/femr/docker-compose.yml
+
+
+
+#Load docker images
+cd /var/__PRODUCT__/
+/usr/local/bin/docker load -i femr.tar
+/usr/local/bin/docker load -i mysql:5.7.tar
+/usr/local/bin/docker load -i dnsmasq.tar
+
+echo "Post installation process finished"
+
+
+
+
+
